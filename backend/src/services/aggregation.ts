@@ -68,8 +68,20 @@ export function calculateTimeAggregation(events: Event[]): TimeAggregation {
   }
 
   // If still in a state (not ended), calculate time up to now
-  // MVP: We don't calculate ongoing periods for simplicity
-  // This can be extended in the future
+  if (currentState && stateStartTime) {
+    const now = new Date();
+    const durationMs = now.getTime() - stateStartTime.getTime();
+    const durationMinutes = Math.floor(durationMs / 60000);
+
+    if (currentState === 'RUNNING') {
+      result.runningMinutes += durationMinutes;
+    } else if (currentState === 'STOPPED' && currentStopReason) {
+      result.stoppedMinutes += durationMinutes;
+      const reason = currentStopReason;
+      result.stopReasonBreakdown[reason] =
+        (result.stopReasonBreakdown[reason] || 0) + durationMinutes;
+    }
+  }
 
   return result;
 }
