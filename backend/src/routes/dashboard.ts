@@ -21,13 +21,14 @@ router.get('/today', async (req, res) => {
       orderBy: { machineCode: 'asc' },
     });
 
-    // Get sessions and events for each machine on this date
+    // Get active sessions (not ENDED) and events for each machine on this date
     const dashboardData = await Promise.all(
       machines.map(async (machine) => {
         const session = await prisma.workSession.findFirst({
           where: {
             machineId: machine.id,
             date: date,
+            status: { not: 'ENDED' },
           },
           include: {
             events: {

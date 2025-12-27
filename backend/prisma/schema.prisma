@@ -46,9 +46,8 @@ model WorkSession {
   machine     Machine       @relation(fields: [machineId], references: [id])
   events      Event[]
 
-  // Constraint: Only one active session per machine per date
-  @@unique([machineId, date, status])
   @@index([machineId, date])
+  @@index([machineId, date, status])
   @@map("work_sessions")
 }
 

@@ -37,11 +37,12 @@ router.get('/:machineCode/status', async (req, res) => {
       return res.status(404).json({ error: 'Machine not found' });
     }
 
-    // Find active session for this date
+    // Find active session (not ENDED) for this date
     const session = await prisma.workSession.findFirst({
       where: {
         machineId: machine.id,
         date: date,
+        status: { not: 'ENDED' },
       },
       include: {
         events: {

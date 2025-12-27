@@ -34,11 +34,12 @@ router.post('/', async (req, res) => {
       return res.status(404).json({ error: 'Machine not found' });
     }
 
-    // Find or create session for this date
+    // Find active session (not ENDED) for this date
     let session = await prisma.workSession.findFirst({
       where: {
         machineId: machine.id,
         date: sessionDate,
+        status: { not: 'ENDED' },
       },
       include: {
         events: {
@@ -48,7 +49,7 @@ router.post('/', async (req, res) => {
       },
     });
 
-    // If no session exists and event is START_RUN, create session
+    // If no active session and event is START_RUN, create new session
     if (!session && event_type === 'START_RUN') {
       session = await prisma.workSession.create({
         data: {
