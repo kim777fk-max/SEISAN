@@ -30,7 +30,7 @@ function MachinePage() {
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
 
   // Input fields
-  const [reasonCode, setReasonCode] = useState('SETUP');
+  const [reasonCode, setReasonCode] = useState('');
   const [operatorName, setOperatorName] = useState('');
   const [memo, setMemo] = useState('');
   const [qty, setQty] = useState('');
@@ -82,6 +82,12 @@ function MachinePage() {
 
   const handleEvent = async (eventType: string) => {
     try {
+      // Validate: STOP requires reason_code
+      if (eventType === 'STOP' && !reasonCode) {
+        alert('停止理由を選択してください');
+        return;
+      }
+
       const payload: any = {
         machine_code: machineCode,
         date,
@@ -293,7 +299,9 @@ function MachinePage() {
           {isRunning && (
             <>
               <div style={{ gridColumn: 'span 2', marginBottom: '0.5rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.3rem' }}>停止理由（必須）</label>
+                <label style={{ display: 'block', marginBottom: '0.3rem', fontWeight: 'bold', color: '#d32f2f' }}>
+                  停止理由（必須）
+                </label>
                 <select
                   value={reasonCode}
                   onChange={(e) => setReasonCode(e.target.value)}
@@ -302,9 +310,10 @@ function MachinePage() {
                     padding: '0.5rem',
                     fontSize: '1rem',
                     borderRadius: '4px',
-                    border: '1px solid #ccc'
+                    border: reasonCode ? '1px solid #ccc' : '2px solid #d32f2f'
                   }}
                 >
+                  <option value="">-- 停止理由を選択してください --</option>
                   {REASON_CODES.map((rc) => (
                     <option key={rc.value} value={rc.value}>
                       {rc.label}
