@@ -1,0 +1,90 @@
+// Prisma Schema for Factory Operation Tracking System
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Machine table
+model Machine {
+  id           String        @id @default(uuid())
+  machineCode  String        @unique @map("machine_code")
+  name         String
+  isActive     Boolean       @default(true) @map("is_active")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+
+  workSessions WorkSession[]
+  events       Event[]
+
+  @@map("machines")
+}
+
+// Work Session status enum
+enum SessionStatus {
+  RUNNING
+  STOPPED
+  ENDED
+}
+
+// Work Session table
+model WorkSession {
+  id          String        @id @default(uuid())
+  date        DateTime      @db.Date
+  shift       String?
+  machineId   String        @map("machine_id")
+  productCode String?       @map("product_code")
+  process     String?
+  status      SessionStatus @default(RUNNING)
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  machine     Machine       @relation(fields: [machineId], references: [id])
+  events      Event[]
+
+  // Constraint: Only one active session per machine per date
+  @@unique([machineId, date, status])
+  @@index([machineId, date])
+  @@map("work_sessions")
+}
+
+// Event type enum
+enum EventType {
+  START_RUN
+  STOP
+  RESUME
+  END
+}
+
+// Reason code enum
+enum ReasonCode {
+  SETUP
+  FAILURE
+  MATERIAL
+  QC
+  OTHER
+}
+
+// Event table
+model Event {
+  id         String     @id @default(uuid())
+  sessionId  String     @map("session_id")
+  machineId  String     @map("machine_id")
+  eventType  EventType  @map("event_type")
+  eventTime  DateTime   @default(now()) @map("event_time")
+  reasonCode ReasonCode? @map("reason_code")
+  memo       String?
+  qty        Int?
+  createdAt  DateTime   @default(now()) @map("created_at")
+
+  session    WorkSession @relation(fields: [sessionId], references: [id])
+  machine    Machine     @relation(fields: [machineId], references: [id])
+
+  @@index([sessionId])
+  @@index([machineId, eventTime])
+  @@map("events")
+}
