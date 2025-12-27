@@ -52,6 +52,11 @@ router.get('/today', async (req, res) => {
 
         const aggregation = calculateTimeAggregation(session.events);
 
+        // Get latest event for operator info
+        const latestEvent = session.events.length > 0
+          ? session.events[session.events.length - 1]
+          : null;
+
         return {
           machineCode: machine.machineCode,
           machineName: machine.name,
@@ -62,6 +67,7 @@ router.get('/today', async (req, res) => {
           shift: session.shift,
           productCode: session.productCode,
           process: session.process,
+          latestOperator: latestEvent?.operatorName || null,
         };
       })
     );

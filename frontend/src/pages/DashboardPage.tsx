@@ -10,6 +10,7 @@ interface MachineData {
   shift?: string | null;
   productCode?: string | null;
   process?: string | null;
+  latestOperator?: string | null;
 }
 
 interface DashboardData {
@@ -170,6 +171,7 @@ function DashboardPage() {
               <tr style={{ backgroundColor: '#f5f5f5' }}>
                 <th style={{ padding: '0.8rem', textAlign: 'left', borderBottom: '2px solid #ddd' }}>機械</th>
                 <th style={{ padding: '0.8rem', textAlign: 'left', borderBottom: '2px solid #ddd' }}>状態</th>
+                <th style={{ padding: '0.8rem', textAlign: 'left', borderBottom: '2px solid #ddd' }}>作業者</th>
                 <th style={{ padding: '0.8rem', textAlign: 'right', borderBottom: '2px solid #ddd' }}>稼働時間</th>
                 <th style={{ padding: '0.8rem', textAlign: 'right', borderBottom: '2px solid #ddd' }}>停止時間</th>
               </tr>
@@ -201,6 +203,9 @@ function DashboardPage() {
                       {machine.status === 'ENDED' && '終了'}
                       {machine.status === 'NO_SESSION' && '未開始'}
                     </span>
+                  </td>
+                  <td style={{ padding: '0.8rem' }}>
+                    {machine.latestOperator || '-'}
                   </td>
                   <td style={{ padding: '0.8rem', textAlign: 'right', color: '#4CAF50', fontWeight: 'bold' }}>
                     {machine.runningMinutes} 分

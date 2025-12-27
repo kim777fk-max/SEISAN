@@ -31,6 +31,7 @@ function MachinePage() {
 
   // Input fields
   const [reasonCode, setReasonCode] = useState('SETUP');
+  const [operatorName, setOperatorName] = useState('');
   const [memo, setMemo] = useState('');
   const [qty, setQty] = useState('');
 
@@ -91,6 +92,7 @@ function MachinePage() {
         payload.reason_code = reasonCode;
       }
 
+      if (operatorName) payload.operator_name = operatorName;
       if (memo) payload.memo = memo;
       if (qty) payload.qty = parseInt(qty);
 
@@ -204,6 +206,23 @@ function MachinePage() {
         marginBottom: '1rem'
       }}>
         <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>任意入力</h3>
+
+        <div style={{ marginBottom: '1rem' }}>
+          <label style={{ display: 'block', marginBottom: '0.3rem' }}>作業者名</label>
+          <input
+            type="text"
+            value={operatorName}
+            onChange={(e) => setOperatorName(e.target.value)}
+            placeholder="作業者名を入力"
+            style={{
+              width: '100%',
+              padding: '0.5rem',
+              fontSize: '1rem',
+              borderRadius: '4px',
+              border: '1px solid #ccc'
+            }}
+          />
+        </div>
 
         <div style={{ marginBottom: '1rem' }}>
           <label style={{ display: 'block', marginBottom: '0.3rem' }}>メモ</label>

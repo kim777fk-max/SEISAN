@@ -71,15 +71,16 @@ enum ReasonCode {
 
 // Event table
 model Event {
-  id         String     @id @default(uuid())
-  sessionId  String     @map("session_id")
-  machineId  String     @map("machine_id")
-  eventType  EventType  @map("event_type")
-  eventTime  DateTime   @default(now()) @map("event_time")
-  reasonCode ReasonCode? @map("reason_code")
-  memo       String?
-  qty        Int?
-  createdAt  DateTime   @default(now()) @map("created_at")
+  id           String     @id @default(uuid())
+  sessionId    String     @map("session_id")
+  machineId    String     @map("machine_id")
+  eventType    EventType  @map("event_type")
+  eventTime    DateTime   @default(now()) @map("event_time")
+  reasonCode   ReasonCode? @map("reason_code")
+  operatorName String?    @map("operator_name")
+  memo         String?
+  qty          Int?
+  createdAt    DateTime   @default(now()) @map("created_at")
 
   session    WorkSession @relation(fields: [sessionId], references: [id])
   machine    Machine     @relation(fields: [machineId], references: [id])

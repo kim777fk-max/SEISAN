@@ -8,7 +8,7 @@ const router = express.Router();
 // POST /api/events - Create a new event
 router.post('/', async (req, res) => {
   try {
-    const { machine_code, date, event_type, reason_code, memo, qty } = req.body;
+    const { machine_code, date, event_type, reason_code, operator_name, memo, qty } = req.body;
 
     if (!machine_code || !date || !event_type) {
       return res.status(400).json({
@@ -112,6 +112,7 @@ router.post('/', async (req, res) => {
         machineId: machine.id,
         eventType: event_type as EventType,
         reasonCode: reason_code ? (reason_code as ReasonCode) : null,
+        operatorName: operator_name || null,
         memo: memo || null,
         qty: qty ? parseInt(qty) : null,
       },

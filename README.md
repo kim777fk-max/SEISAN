@@ -18,6 +18,7 @@
 - 稼働を「イベント」としてDBに保存
 - イベントはサーバ時刻で記録（端末時刻は使用しない）
 - 状態遷移ルールに従った厳密な状態管理
+- **各イベントに作業者名を記録**（途中で作業者交代可能）
 
 ### 状態遷移ルール
 
@@ -102,6 +103,7 @@ docker-compose down -v
 
 ### 任意入力項目
 
+- **作業者名**: イベントを記録した作業者の名前
 - **メモ**: 自由記述（作業内容など）
 - **数量**: 生産数量など
 
@@ -134,16 +136,17 @@ docker-compose down -v
 
 #### events（イベントログ）
 
-| カラム      | 型     | 説明                                        |
-| ----------- | ------ | ------------------------------------------- |
-| id          | uuid   | 主キー                                      |
-| session_id  | uuid   | セッションID（外部キー）                    |
-| machine_id  | uuid   | 機械ID（外部キー）                          |
-| event_type  | enum   | イベント種別（START_RUN/STOP/RESUME/END）   |
-| event_time  | timestamp | イベント発生時刻（サーバ時刻）            |
-| reason_code | enum   | 停止理由（STOP時のみ必須）                  |
-| memo        | string | メモ（オプション）                          |
-| qty         | int    | 数量（オプション）                          |
+| カラム        | 型     | 説明                                        |
+| ------------- | ------ | ------------------------------------------- |
+| id            | uuid   | 主キー                                      |
+| session_id    | uuid   | セッションID（外部キー）                    |
+| machine_id    | uuid   | 機械ID（外部キー）                          |
+| event_type    | enum   | イベント種別（START_RUN/STOP/RESUME/END）   |
+| event_time    | timestamp | イベント発生時刻（サーバ時刻）            |
+| reason_code   | enum   | 停止理由（STOP時のみ必須）                  |
+| operator_name | string | 作業者名（オプション）                      |
+| memo          | string | メモ（オプション）                          |
+| qty           | int    | 数量（オプション）                          |
 
 ## API エンドポイント
 
