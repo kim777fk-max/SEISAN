@@ -5,6 +5,8 @@ import machinesRouter from './routes/machines';
 import sessionsRouter from './routes/sessions';
 import eventsRouter from './routes/events';
 import dashboardRouter from './routes/dashboard';
+import newsRouter from './routes/news';
+import { getNewsScheduler } from './services/scheduler';
 
 dotenv.config();
 
@@ -25,6 +27,7 @@ app.use('/api/machines', machinesRouter);
 app.use('/api/sessions', sessionsRouter);
 app.use('/api/events', eventsRouter);
 app.use('/api/dashboard', dashboardRouter);
+app.use('/api/news', newsRouter);
 
 // Error handling
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -34,4 +37,14 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+
+  // Start news collection scheduler
+  try {
+    const scheduler = getNewsScheduler();
+    scheduler.start();
+    console.log('News collection scheduler started');
+  } catch (error) {
+    console.error('Failed to start news scheduler:', error);
+    console.error('News collection will not be available. Please check ANTHROPIC_API_KEY in .env');
+  }
 });

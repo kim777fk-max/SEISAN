@@ -88,3 +88,25 @@ model Event {
   @@index([machineId, eventTime])
   @@map("events")
 }
+
+// News Article table for outdoor/camping news collection
+model NewsArticle {
+  id               String   @id @default(uuid())
+  title            String
+  finalUrl         String   @unique @map("final_url")
+  sourceDomain     String   @map("source_domain")
+  publishedAt      String?  @map("published_at")
+  contentFull      String   @map("content_full") @db.Text
+  keyPoints        String[] @map("key_points")
+  tags             String[]
+  credibilityNote  String?  @map("credibility_note")
+  keyword          String   // The search keyword used (e.g., "キャンプ", "アウトドア")
+  collectedAt      DateTime @default(now()) @map("collected_at")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@index([keyword])
+  @@index([collectedAt])
+  @@index([publishedAt])
+  @@map("news_articles")
+}

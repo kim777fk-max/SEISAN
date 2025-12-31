@@ -150,6 +150,74 @@ docker-compose down -v
 | memo          | string | メモ（オプション）                          |
 | qty           | int    | 数量（オプション）                          |
 
+## アウトドア/キャンプ系ニュース収集機能
+
+工場稼働計測システムに加えて、**毎日朝6時にアウトドア/キャンプ系ニュースを自動収集する機能**を搭載しています。
+収集したニュースは、ブログ記事作成のネタとして活用できる詳細な情報として保存されます。
+
+### 機能概要
+
+- **自動収集**: 毎日朝6時（日本時間）に自動実行
+- **AI分析**: Claude APIを使用して記事を詳細分析
+- **高品質フィルタリング**: 関係ない記事や低品質な記事を除外
+- **詳細情報**: ブログ記事が書ける密度の情報を抽出
+
+### 収集する情報
+
+各記事について以下の情報を収集します：
+
+1. **title** - 記事タイトル
+2. **final_url** - 記事URL
+3. **source_domain** - 配信元ドメイン
+4. **published_at** - 公開日
+5. **content_full** - 記事詳細（600〜1200字）
+6. **key_points** - 重要ポイント（3〜7点）
+7. **tags** - タグ（3〜8個）
+8. **credibility_note** - 信頼性情報
+
+### 環境設定
+
+ニュース収集機能を使用するには、以下の環境変数を設定してください：
+
+```bash
+# backend/.env を作成（.env.exampleをコピー）
+cp backend/.env.example backend/.env
+```
+
+必須の環境変数：
+
+```env
+# Anthropic Claude API（必須）
+ANTHROPIC_API_KEY=your_anthropic_api_key_here
+
+# Google Custom Search API（オプション - より良い検索結果）
+GOOGLE_API_KEY=your_google_api_key_here
+GOOGLE_CSE_ID=your_google_cse_id_here
+
+# 監視するキーワード（カンマ区切り）
+NEWS_KEYWORDS=キャンプ,アウトドア,ソロキャンプ,キャンプギア,焚き火
+
+# 起動時に収集を実行するか（開発用）
+RUN_ON_STARTUP=false
+```
+
+### 手動実行
+
+APIエンドポイントを使って手動でニュース収集を実行できます：
+
+```bash
+# ニュース収集を手動トリガー
+curl -X POST http://localhost:3000/api/news/trigger
+```
+
+### キーワードのカスタマイズ
+
+環境変数 `NEWS_KEYWORDS` でキーワードをカスタマイズできます：
+
+```env
+NEWS_KEYWORDS=テント,寝袋,登山,ハイキング,BBQ
+```
+
 ## API エンドポイント
 
 ### Machines
@@ -169,6 +237,16 @@ docker-compose down -v
 ### Dashboard
 
 - `GET /api/dashboard/today?date=YYYY-MM-DD` - ダッシュボードデータ取得
+
+### News（ニュース収集）
+
+- `GET /api/news` - ニュース記事一覧取得
+  - クエリパラメータ: `keyword`, `limit`, `offset`
+- `GET /api/news/:id` - 特定記事の詳細取得
+- `GET /api/news/by-keyword/:keyword` - キーワード別記事取得
+- `POST /api/news/trigger` - 手動でニュース収集を実行
+- `GET /api/news/stats/summary` - 統計情報取得
+- `DELETE /api/news/:id` - 記事削除
 
 ## 集計ロジック
 
